@@ -51,8 +51,8 @@ app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'build/index.html')))
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(80, () => {
-	console.log('HTTP Server running on port 80');
+httpServer.listen(8080, () => {
+	console.log('HTTP Server running on port 8080');
 });
 
 httpsServer.listen(443, () => {
