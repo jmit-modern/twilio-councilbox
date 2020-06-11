@@ -1,6 +1,22 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
+const http = require('http');
+const https = require('https');
 const path = require('path');
+
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
+
 const AccessToken = require('twilio').jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 require('dotenv').config();
@@ -13,6 +29,9 @@ const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/token', (req, res) => {
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   const { identity, roomName } = req.query;
   const token = new AccessToken(twilioAccountSid, twilioApiKeySID, twilioApiKeySecret, {
     ttl: MAX_ALLOWED_SESSION_DURATION,
@@ -26,4 +45,16 @@ app.get('/token', (req, res) => {
 
 app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
 
-app.listen(8081, () => console.log('token server running on 8081'));
+// app.listen(8081, () => console.log('token server running on 8081'));
+
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(8081, () => {
+	console.log('HTTP Server running on port 8081');
+});
+
+httpsServer.listen(4433, () => {
+	console.log('HTTPS Server running on port 4433');
+});
