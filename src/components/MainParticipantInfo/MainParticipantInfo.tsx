@@ -2,12 +2,14 @@ import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { LocalVideoTrack, Participant, RemoteVideoTrack } from 'twilio-video';
-
+import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
+import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import BandwidthWarning from '../BandwidthWarning/BandwidthWarning';
 import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackSwitchedOff';
 import usePublications from '../../hooks/usePublications/usePublications';
 import useTrack from '../../hooks/useTrack/useTrack';
 import VideocamOff from '@material-ui/icons/VideocamOff';
+import ParticipantTracks from '../ParticipantTracks/ParticipantTracks';
 
 const useStyles = makeStyles({
   container: {
@@ -38,6 +40,14 @@ const useStyles = makeStyles({
     padding: '0.4em',
     width: '100%',
   },
+  localParticipant: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 9,
+    width: '220px',
+    padding: '10px',
+  },
 });
 
 interface MainParticipantInfoProps {
@@ -56,6 +66,10 @@ export default function MainParticipantInfo({ participant, children }: MainParti
   const videoTrack = useTrack(screenSharePublication || videoPublication);
   const isVideoSwitchedOff = useIsTrackSwitchedOff(videoTrack as LocalVideoTrack | RemoteVideoTrack);
 
+  const {
+    room: { localParticipant },
+  } = useVideoContext();
+
   return (
     <div
       data-cy-main-participant
@@ -67,6 +81,11 @@ export default function MainParticipantInfo({ participant, children }: MainParti
           {!isVideoEnabled && <VideocamOff />}
         </h4>
       </div>
+
+      <div className={classes.localParticipant}>
+        <ParticipantTracks participant={localParticipant} disableAudio={true} enableScreenShare={false} />
+      </div>
+
       {isVideoSwitchedOff && <BandwidthWarning />}
       {children}
     </div>

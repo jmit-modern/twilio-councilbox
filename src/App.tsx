@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {useState} from 'react';
 import { styled } from '@material-ui/core/styles';
 
 import Controls from './components/Controls/Controls';
@@ -20,20 +20,29 @@ const Main = styled('main')({
 });
 
 export default function App() {
+  const [viewMode, setViewMode] = useState(false);
   const roomState = useRoomState();
 
+  // change view mode
+  function changeViewMode(arg: Boolean){
+    if(arg == false){
+      setViewMode(false)
+    }else{
+      setViewMode(true)
+    }
+  }
   // Here we would like the height of the main container to be the height of the viewport.
   // On some mobile browsers, 'height: 100vh' sets the height equal to that of the screen,
   // not the viewport. This looks bad when the mobile browsers location bar is open.
   // We will dynamically set the height with 'window.innerHeight', which means that this
   // will look good on mobile browsers even after the location bar opens or closes.
-  const height = useHeight();
+  const height = useHeight() + 'px';
 
   return (
     <Container style={{ height }}>
-      <MenuBar />
+      <MenuBar onViewModeChange={ changeViewMode }/>
       <Main>
-        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
+        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room viewMode={ viewMode } />}
         <Controls />
       </Main>
       <ReconnectingNotification />

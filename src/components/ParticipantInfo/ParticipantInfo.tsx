@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
-      height: `${(theme.sidebarWidth * 9) / 16}px`,
+      // height: `${(theme.sidebarWidth * 9) / 16}px`,
       overflow: 'hidden',
       cursor: 'pointer',
       '& video': {
