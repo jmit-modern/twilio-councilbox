@@ -29,9 +29,9 @@ const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/token', (req, res) => {
-  response.header('Access-Control-Allow-Origin', '*');
-  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   const { identity, roomName } = req.query;
   const token = new AccessToken(twilioAccountSid, twilioApiKeySID, twilioApiKeySecret, {
     ttl: MAX_ALLOWED_SESSION_DURATION,
