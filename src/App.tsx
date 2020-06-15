@@ -1,4 +1,4 @@
-import React , {useState} from 'react';
+import React, { useState } from 'react';
 import { styled } from '@material-ui/core/styles';
 
 import Controls from './components/Controls/Controls';
@@ -24,11 +24,11 @@ export default function App() {
   const roomState = useRoomState();
 
   // change view mode
-  function changeViewMode(arg: Boolean){
-    if(arg == false){
-      setViewMode(false)
-    }else{
-      setViewMode(true)
+  function changeViewMode(arg: Boolean) {
+    if (arg == false) {
+      setViewMode(false);
+    } else {
+      setViewMode(true);
     }
   }
   // Here we would like the height of the main container to be the height of the viewport.
@@ -40,9 +40,9 @@ export default function App() {
 
   return (
     <Container style={{ height }}>
-      <MenuBar onViewModeChange={ changeViewMode }/>
+      <MenuBar onViewModeChange={changeViewMode} />
       <Main>
-        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room viewMode={ viewMode } />}
+        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room viewMode={viewMode} />}
         <Controls />
       </Main>
       <ReconnectingNotification />

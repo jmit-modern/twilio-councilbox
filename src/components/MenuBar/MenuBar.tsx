@@ -64,7 +64,7 @@ interface Props {
   onViewModeChange: Function;
 }
 
-export default function MenuBar({onViewModeChange}: Props) {
+export default function MenuBar({ onViewModeChange }: Props) {
   const classes = useStyles();
   const { URLRoomName } = useParams();
   const { user, getToken, isFetching } = useAppState();
@@ -141,7 +141,7 @@ export default function MenuBar({onViewModeChange}: Props) {
           <h3>{roomName}</h3>
         )}
         <div className={classes.rightButtonContainer}>
-          <ViewModeButton viewMode={onViewModeChange}/>
+          <ViewModeButton viewMode={onViewModeChange} />
           <FlipCameraButton />
           <DeviceSelector />
           <ToggleFullscreenButton />

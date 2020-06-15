@@ -1,31 +1,42 @@
 import React from 'react';
 import { Theme, createStyles, makeStyles, styled } from '@material-ui/core/styles';
 import Participant from '../Participant/Participant';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-// import GridListTileBar from '@material-ui/core/GridListTileBar';
+import Participantid from '../ParticipantId/ParticipantId';
 import useParticipants from '../../hooks/useParticipants/useParticipants';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import classes from '*.module.css';
 import useHeight from '../../hooks/useHeight/useHeight';
 
-const useStyles = makeStyles((theme: Theme) => 
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-
-    },
+    root: {},
     gridList: {
-      // height: '100%'
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr 1fr',
+      columnGap: '10px',
+      rowGap: '10px',
+    },
+    gridListItem: {},
+    idStrip: {
+      display: 'flex',
+      padding: '10px',
+      border: '1px solid',
+    },
+    roomParticpantNumber: {
+      textAlign: 'center',
+      border: '1px solid',
+      padding: '10px',
+      borderTop: 'none',
     },
   })
-)
+);
 
 const Container = styled('div')(({ theme }) => ({
   height: '100%',
-  [theme.breakpoints.down('xs')]: {
-    
-  },
+  maxWidth: '1440px',
+  margin: 'auto !important',
+  [theme.breakpoints.down('xs')]: {},
 }));
 
 export default function GridView() {
@@ -36,29 +47,45 @@ export default function GridView() {
   const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
   const classes = useStyles();
 
-  const height = (useHeight()/2-30) + 'px';
+  const height = useHeight() / 2 - 30 + 'px';
 
   return (
     <Container>
-      <GridList cols={3} className={classes.gridList}>
-        <GridListTile key={localParticipant.sid} cols={1} style={{height}}>
+      <div className={classes.gridList}>
+        <div key={localParticipant.sid} className={classes.gridListItem}>
           <Participant
             participant={localParticipant}
             isSelected={selectedParticipant === localParticipant}
             onClick={() => setSelectedParticipant(localParticipant)}
           />
-        </GridListTile>
-        {participants.map((participant) => (
-          <GridListTile key={participant.sid} cols={1} style={{height}}>
+        </div>
+        {participants.slice(0, 5).map(participant => (
+          <div key={participant.sid} className={classes.gridListItem}>
             <Participant
               key={participant.sid}
               participant={participant}
               isSelected={selectedParticipant === participant}
               onClick={() => setSelectedParticipant(participant)}
             />
-          </GridListTile>
+          </div>
         ))}
-      </GridList>
+      </div>
+      <div className={classes.idStrip}>
+        <Participantid
+          participant={localParticipant}
+          onClick={() => setSelectedParticipant(localParticipant)}
+          isSelected={selectedParticipant === localParticipant}
+        />
+        {participants.slice(0, 5).map(participant => (
+          <Participantid
+            participant={participant}
+            onClick={() => setSelectedParticipant(participant)}
+            isSelected={selectedParticipant === participant}
+          />
+        ))}
+      </div>
+
+      <div className={classes.roomParticpantNumber}>{participants.length + 1} participants in the room</div>
     </Container>
   );
 }

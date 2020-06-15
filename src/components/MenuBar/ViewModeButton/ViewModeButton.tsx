@@ -8,11 +8,11 @@ interface Props {
   viewMode: Function;
 }
 
-export default function ViewModeButton({viewMode}: Props) {
+export default function ViewModeButton({ viewMode }: Props) {
   const [changeMode, setChangeMode] = useState(true);
 
-  function changeViewMode () {
-    setChangeMode(!changeMode)
+  function changeViewMode() {
+    setChangeMode(!changeMode);
     viewMode(changeMode);
   }
   return (
@@ -20,5 +20,5 @@ export default function ViewModeButton({viewMode}: Props) {
     <IconButton aria-label={`full screen`} onClick={changeViewMode}>
       {changeMode ? <TabIcon /> : <GridOnIcon />}
     </IconButton>
-  )
+  );
 }

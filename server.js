@@ -6,15 +6,15 @@ const https = require('https');
 const path = require('path');
 
 // Certificate
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/chain.pem', 'utf8');
+// const privateKey = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/privkey.pem', 'utf8');
+// const certificate = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/cert.pem', 'utf8');
+// const ca = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/chain.pem', 'utf8');
 
-const credentials = {
-	key: privateKey,
-	cert: certificate,
-	ca: ca
-};
+// const credentials = {
+// 	key: privateKey,
+// 	cert: certificate,
+// 	ca: ca
+// };
 
 
 const AccessToken = require('twilio').jwt.AccessToken;
@@ -49,12 +49,12 @@ app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'build/index.html')))
 
 // Starting both http & https servers
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+// const httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(8080, () => {
 	console.log('HTTP Server running on port 8080');
 });
 
-// httpsServer.listen(443, () => {
-// 	console.log('HTTPS Server running on port 43');
+// httpsServer.listen(4433, () => {
+// 	console.log('HTTPS Server running on port 4433');
 // });
