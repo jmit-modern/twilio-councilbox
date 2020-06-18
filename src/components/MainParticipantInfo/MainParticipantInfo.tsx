@@ -82,10 +82,6 @@ export default function MainParticipantInfo({ participant, children }: MainParti
         </h4>
       </div>
 
-      <div className={classes.localParticipant}>
-        <ParticipantTracks participant={localParticipant} disableAudio={true} enableScreenShare={false} />
-      </div>
-
       {isVideoSwitchedOff && <BandwidthWarning />}
       {children}
     </div>
