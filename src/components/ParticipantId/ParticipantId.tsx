@@ -1,9 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import { Theme, createStyles, makeStyles, styled } from '@material-ui/core/styles';
-import useParticipants from '../../hooks/useParticipants/useParticipants';
-import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import { Participant as IParticipant } from 'twilio-video';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,6 +33,7 @@ interface ParticipantIdProps {
 
 export default function ParticipantId({ participant, onClick, isSelected }: ParticipantIdProps) {
   const classes = useStyles();
+
   return (
     <div
       className={clsx({

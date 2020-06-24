@@ -1,5 +1,6 @@
 const fs = require('fs');
 const express = require('express');
+const bodyParser = require('body-parser')
 const app = express();
 const http = require('http');
 const https = require('https');
@@ -16,8 +17,8 @@ const path = require('path');
 // 	ca: ca
 // };
 
-
-const AccessToken = require('twilio').jwt.AccessToken;
+const Twilio = require('twilio');
+const AccessToken = Twilio.jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 require('dotenv').config();
 
@@ -26,6 +27,7 @@ const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioApiKeySID = process.env.TWILIO_API_KEY_SID;
 const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
 
+app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/token', (req, res) => {
@@ -41,6 +43,33 @@ app.get('/token', (req, res) => {
   token.addGrant(videoGrant);
   res.send(token.toJwt());
   console.log(`issued token for ${identity} in room ${roomName}`);
+});
+
+app.post('/updateSubscription', async (req, res) => {
+  const { identity, roomName } = req.body;
+
+  const client = new Twilio(twilioApiKeySID, twilioApiKeySecret, {accountSid: twilioAccountSid});
+
+  client.video.rooms(roomName).participants
+  .each({status: 'connected'}, (participant) => {
+    if(participant.identity == 'moderator') return;
+    client.video.rooms(roomName).participants.get(participant.identity)
+    .subscribeRules.update({
+      rules: [
+        {"type": "include", "all": true},
+        {"type": "exclude", "publisher": identity}
+      ]
+    })
+    .then(result => {
+      res.send(result)
+      console.log('Subscribe Rules updated successfully')
+    })
+    .catch(error => {
+      res.send(error)
+      console.log('Error updating rules ' + error)
+    });
+  });
+
 });
 
 app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'build/index.html')));

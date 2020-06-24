@@ -22,6 +22,10 @@ const ScrollContainer = styled('div')(({ theme }) => ({
   },
 }));
 
+const ParticipantContainer = styled('div')(({ theme }) => ({
+  height: `${(theme.sidebarWidth * 3) / 4}px`,
+}));
+
 export default function ParticipantStrip() {
   const {
     room: { localParticipant },
@@ -38,12 +42,14 @@ export default function ParticipantStrip() {
           onClick={() => setSelectedParticipant(localParticipant)}
         /> */}
         {participants.map(participant => (
-          <Participant
-            key={participant.sid}
-            participant={participant}
-            isSelected={selectedParticipant === participant}
-            onClick={() => setSelectedParticipant(participant)}
-          />
+          <ParticipantContainer>
+            <Participant
+              key={participant.sid}
+              participant={participant}
+              isSelected={selectedParticipant === participant}
+              onClick={() => setSelectedParticipant(participant)}
+            />
+          </ParticipantContainer>
         ))}
       </ScrollContainer>
     </Container>

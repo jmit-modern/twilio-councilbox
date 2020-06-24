@@ -18,6 +18,9 @@ import { Typography } from '@material-ui/core';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { DeviceSelector } from './DeviceSelector/DeviceSelector';
 
+import useIsModerator from '../../hooks/useIsModerator/useIsModerator';
+import useIsSubscriber from '../../hooks/useIsSubscriber/useIsSubscriber';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -74,11 +77,17 @@ export default function MenuBar({ onViewModeChange }: Props) {
   const [name, setName] = useState<string>(user?.displayName || '');
   const [roomName, setRoomName] = useState<string>('');
 
+  const isModerator = useIsModerator();
+  const isSubscriber = useIsSubscriber();
+
   useEffect(() => {
     if (URLRoomName) {
       setRoomName(URLRoomName);
     }
-  }, [URLRoomName]);
+    if (isModerator) {
+      setName('moderator');
+    }
+  }, [URLRoomName, name]);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -94,9 +103,10 @@ export default function MenuBar({ onViewModeChange }: Props) {
     if (!window.location.origin.includes('twil.io')) {
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
     }
-    getToken(name, roomName).then(token => connect(token));
-    // window.alert("You don't have permission to create the room");
-    // return false;
+
+    getToken(name, roomName).then(async token => {
+      await connect(token);
+    });
   };
 
   return (
@@ -112,6 +122,7 @@ export default function MenuBar({ onViewModeChange }: Props) {
                 value={name}
                 onChange={handleNameChange}
                 margin="dense"
+                disabled={isModerator}
               />
             ) : (
               <Typography className={classes.displayName} variant="body1">

@@ -19,7 +19,7 @@ export default function MainParticipant() {
   const {
     room: { localParticipant },
   } = useVideoContext();
-  const videoContainedWidth = (useHeight()-64)*4/3 + 'px';
+  const videoContainedWidth = ((useHeight() - 64) * 4) / 3 + 'px';
 
   const useStyles = makeStyles({
     localParticipantTrack: {
@@ -28,7 +28,7 @@ export default function MainParticipant() {
       right: `calc((100% - ${videoContainedWidth})/2)`,
       zIndex: 9,
       width: '220px',
-      border: '1px dashed'
+      border: '1px dashed',
     },
   });
 

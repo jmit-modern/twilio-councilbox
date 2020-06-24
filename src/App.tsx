@@ -23,7 +23,10 @@ export default function App() {
   const [viewMode, setViewMode] = useState(false);
   const roomState = useRoomState();
 
-  // change view mode
+  /**
+   * Change View Mode of Video
+   * @param arg true: container view, false: grid view
+   */
   function changeViewMode(arg: Boolean) {
     if (arg == false) {
       setViewMode(false);

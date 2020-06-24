@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { LocalAudioTrack, LocalVideoTrack, Participant, RemoteAudioTrack, RemoteVideoTrack } from 'twilio-video';
@@ -8,13 +8,18 @@ import BandwidthWarning from '../BandwidthWarning/BandwidthWarning';
 import NetworkQualityLevel from '../NewtorkQualityLevel/NetworkQualityLevel';
 import ParticipantConnectionIndicator from './ParticipantConnectionIndicator/ParticipantConnectionIndicator';
 import PinIcon from './PinIcon/PinIcon';
+import VideocamIcon from './VideocamIcon/VideocamIcon';
 import ScreenShare from '@material-ui/icons/ScreenShare';
 import VideocamOff from '@material-ui/icons/VideocamOff';
+import Videocam from '@material-ui/icons/Videocam';
+import PresentToAll from '@material-ui/icons/PresentToAll';
 
 import useParticipantNetworkQualityLevel from '../../hooks/useParticipantNetworkQualityLevel/useParticipantNetworkQualityLevel';
 import usePublications from '../../hooks/usePublications/usePublications';
 import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackSwitchedOff';
 import useTrack from '../../hooks/useTrack/useTrack';
+import useIsModerator from '../../hooks/useIsModerator/useIsModerator';
+import useIsWebinar from '../../hooks/useIsWebinar/useIsWebinar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
-      // height: `${(theme.sidebarWidth * 9) / 16}px`,
+      // minHeight: `${(theme.sidebarWidth * 9) / 16}px`,
+      height: '100%',
       overflow: 'hidden',
       cursor: 'pointer',
       '& video': {
@@ -81,20 +87,50 @@ interface ParticipantInfoProps {
 
 export default function ParticipantInfo({ participant, onClick, isSelected, children }: ParticipantInfoProps) {
   const publications = usePublications(participant);
+  console.log(publications);
 
   const audioPublication = publications.find(p => p.kind === 'audio');
   const videoPublication = publications.find(p => p.trackName.includes('camera'));
+  console.log(videoPublication);
 
   const networkQualityLevel = useParticipantNetworkQualityLevel(participant);
   const isVideoEnabled = Boolean(videoPublication);
   const isScreenShareEnabled = publications.find(p => p.trackName.includes('screen'));
 
   const videoTrack = useTrack(videoPublication);
+  const isVideoSubscribed = Boolean(videoTrack);
+  // const [isVideoSubscribed, setIsVideoSubscribed] = useState(Boolean(videoTrack))
+
   const isVideoSwitchedOff = useIsTrackSwitchedOff(videoTrack as LocalVideoTrack | RemoteVideoTrack);
 
   const audioTrack = useTrack(audioPublication) as LocalAudioTrack | RemoteAudioTrack;
 
   const classes = useStyles();
+
+  const isModerator = useIsModerator();
+  const isWebinar = useIsWebinar();
+
+  const updateSubscription = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+
+    if (isModerator) {
+      fetch('/updateSubscription', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identity: participant.identity, roomName: 'test' }),
+      })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      console.log('updateSubscription');
+    }
+  };
 
   return (
     <div
@@ -114,9 +150,10 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
         </div>
         <div>
           <AudioLevelIndicator audioTrack={audioTrack} background="white" />
-          {!isVideoEnabled && <VideocamOff />}
+          <VideocamIcon videoEnabled={isVideoEnabled} />
+          <PresentToAll onClick={() => updateSubscription} />
           {isScreenShareEnabled && <ScreenShare />}
-          {isSelected && <PinIcon />}
+          {isVideoEnabled && isSelected && <PinIcon />}
         </div>
       </div>
       {isVideoSwitchedOff && <BandwidthWarning />}
