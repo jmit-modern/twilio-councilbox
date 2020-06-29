@@ -15,6 +15,8 @@ export interface StateContextType {
   isFetching: boolean;
   activeSinkId: string;
   setActiveSinkId(sinkId: string): void;
+  socket: SocketIOClient.Socket;
+  setSocket(socket: SocketIOClient.Socket | null): void;
 }
 
 export const StateContext = createContext<StateContextType>(null!);
@@ -31,7 +33,8 @@ export const StateContext = createContext<StateContextType>(null!);
 export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
   const [error, setError] = useState<TwilioError | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [activeSinkId, setActiveSinkId] = useState('default');
+  const [activeSinkId, setActiveSinkId] = useState('default'); 
+  const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
 
   let contextValue = {
     error,
@@ -39,6 +42,8 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
     isFetching,
     activeSinkId,
     setActiveSinkId,
+    socket,
+    setSocket
   } as StateContextType;
 
   if (process.env.REACT_APP_SET_AUTH === 'firebase') {

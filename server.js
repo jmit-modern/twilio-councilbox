@@ -5,6 +5,7 @@ const app = express();
 const http = require('http');
 const https = require('https');
 const path = require('path');
+const socketIO = require('socket.io');
 
 // Certificate
 // const privateKey = fs.readFileSync('/etc/letsencrypt/live/twilio.councilbox.com/privkey.pem', 'utf8');
@@ -30,6 +31,13 @@ const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'build')));
 
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+// const httpsServer = https.createServer(credentials, app);
+
+// This creates our socket using the instance of the server
+const io = socketIO(httpServer)
+
 app.get('/token', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -45,40 +53,28 @@ app.get('/token', (req, res) => {
   console.log(`issued token for ${identity} in room ${roomName}`);
 });
 
-app.post('/updateSubscription', async (req, res) => {
-  const { identity, roomName } = req.body;
+// This is what the socket.io syntax is like, we will work this later
+io.on('connection', socket => {
+  console.log('New client connected')
 
-  const client = new Twilio(twilioApiKeySID, twilioApiKeySecret, {accountSid: twilioAccountSid});
-
-  client.video.rooms(roomName).participants
-  .each({status: 'connected'}, (participant) => {
-    if(participant.identity == 'moderator') return;
-    client.video.rooms(roomName).participants.get(participant.identity)
-    .subscribeRules.update({
-      rules: [
-        {"type": "include", "all": true},
-        {"type": "exclude", "publisher": identity}
-      ]
-    })
-    .then(result => {
-      res.send(result)
-      console.log('Subscribe Rules updated successfully')
-    })
-    .catch(error => {
-      res.send(error)
-      console.log('Error updating rules ' + error)
-    });
+  // just like on the client side, we have a socket.on method that takes a callback function
+  socket.on('change-publish', (data) => {
+    // once we get a 'publish-user' event from one of our clients, we will send it to the rest of the clients
+    // we make use of the socket.emit method again with the argument given to use from the callback function above
+    console.log(`User ${data.state}: `, data.identity)
+    io.sockets.emit('change-publish', {identity: data.identity, state: data.state})
   });
 
-});
+  // disconnect is fired when a client leaves the server
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+})
+
 
 app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
 
 // app.listen(8081, () => console.log('token server running on 8081'));
-
-// Starting both http & https servers
-const httpServer = http.createServer(app);
-// const httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(8080, () => {
 	console.log('HTTP Server running on port 8080');

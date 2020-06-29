@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@material-ui/core/styles';
 
 import Controls from './components/Controls/Controls';
@@ -9,6 +9,9 @@ import Room from './components/Room/Room';
 
 import useHeight from './hooks/useHeight/useHeight';
 import useRoomState from './hooks/useRoomState/useRoomState';
+import { useAppState } from './state';
+
+import socketIOClient from "socket.io-client";
 
 const Container = styled('div')({
   display: 'grid',
@@ -22,6 +25,21 @@ const Main = styled('main')({
 export default function App() {
   const [viewMode, setViewMode] = useState(false);
   const roomState = useRoomState();
+
+  const { setSocket } = useAppState();
+
+  useEffect(()=>{
+
+    // Set Websocket as a global app state
+    const socket = socketIOClient("http://localhost:8080");
+    setSocket(socket);
+
+    console.log("app socket")
+
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
 
   /**
    * Change View Mode of Video

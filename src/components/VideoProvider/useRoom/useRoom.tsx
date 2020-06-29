@@ -1,8 +1,9 @@
 import { Callback } from '../../../types';
 import EventEmitter from 'events';
 import { isMobile } from '../../../utils';
-import Video, { ConnectOptions, LocalTrack, Room } from 'twilio-video';
+import Video, { ConnectOptions, LocalTrack, Room, Track } from 'twilio-video';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import useIsSubscriber from '../../../hooks/useIsSubscriber/useIsSubscriber';
 
 // @ts-ignore
 window.TwilioVideo = Video;
@@ -11,6 +12,8 @@ export default function useRoom(localTracks: LocalTrack[], onError: Callback, op
   const [room, setRoom] = useState<Room>(new EventEmitter() as Room);
   const [isConnecting, setIsConnecting] = useState(false);
   const localTracksRef = useRef<LocalTrack[]>([]);
+
+  const isSubscriber = useIsSubscriber();
 
   useEffect(() => {
     // It can take a moment for Video.connect to connect to a room. During this time, the user may have enabled or disabled their
@@ -40,14 +43,25 @@ export default function useRoom(localTracks: LocalTrack[], onError: Callback, op
           // @ts-ignore
           window.twilioRoom = newRoom;
 
-          localTracksRef.current.forEach(track =>
+          localTracksRef.current.forEach(track => {
+            // console.log(track)
             // Tracks can be supplied as arguments to the Video.connect() function and they will automatically be published.
             // However, tracks must be published manually in order to set the priority on them.
             // All video tracks are published with 'low' priority. This works because the video
             // track that is displayed in the 'MainParticipant' component will have it's priority
             // set to 'high' via track.setPriority()
-            newRoom.localParticipant.publishTrack(track, { priority: track.kind === 'video' ? 'low' : 'standard' })
-          );
+
+            if(isSubscriber){
+
+              newRoom.localParticipant.unpublishTrack(track);
+              console.log(track)
+              // track.stop()
+              // if(track.kind === 'audio')
+              // track.disable()
+            } else {
+              newRoom.localParticipant.publishTrack(track, { priority: track.kind === 'video' ? 'low' : 'standard' });
+            }
+          });
 
           setIsConnecting(false);
 

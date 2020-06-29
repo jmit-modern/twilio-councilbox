@@ -15,7 +15,7 @@ const Container = styled('div')(({ theme }) => ({
     gridTemplateColumns: `auto`,
     gridTemplateRows: `calc(100% - ${theme.sidebarMobileHeight + 12}px) ${theme.sidebarMobileHeight + 6}px`,
     gridGap: '6px',
-  },
+  },  
 }));
 
 export default function ContainerView() {

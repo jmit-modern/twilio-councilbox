@@ -9,17 +9,17 @@ import NetworkQualityLevel from '../NewtorkQualityLevel/NetworkQualityLevel';
 import ParticipantConnectionIndicator from './ParticipantConnectionIndicator/ParticipantConnectionIndicator';
 import PinIcon from './PinIcon/PinIcon';
 import VideocamIcon from './VideocamIcon/VideocamIcon';
+import PresentationIcon from './PresentationIcon/PresentationIcon';
 import ScreenShare from '@material-ui/icons/ScreenShare';
-import VideocamOff from '@material-ui/icons/VideocamOff';
-import Videocam from '@material-ui/icons/Videocam';
-import PresentToAll from '@material-ui/icons/PresentToAll';
 
 import useParticipantNetworkQualityLevel from '../../hooks/useParticipantNetworkQualityLevel/useParticipantNetworkQualityLevel';
 import usePublications from '../../hooks/usePublications/usePublications';
 import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackSwitchedOff';
 import useTrack from '../../hooks/useTrack/useTrack';
-import useIsModerator from '../../hooks/useIsModerator/useIsModerator';
-import useIsWebinar from '../../hooks/useIsWebinar/useIsWebinar';
+import { useAppState } from '../../state';
+import useLocalTracksToggle from '../../hooks/useLocalTracksToggle/useLocalTracksToggle';
+
+// import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,19 +87,15 @@ interface ParticipantInfoProps {
 
 export default function ParticipantInfo({ participant, onClick, isSelected, children }: ParticipantInfoProps) {
   const publications = usePublications(participant);
-  console.log(publications);
 
   const audioPublication = publications.find(p => p.kind === 'audio');
   const videoPublication = publications.find(p => p.trackName.includes('camera'));
-  console.log(videoPublication);
 
   const networkQualityLevel = useParticipantNetworkQualityLevel(participant);
   const isVideoEnabled = Boolean(videoPublication);
   const isScreenShareEnabled = publications.find(p => p.trackName.includes('screen'));
 
   const videoTrack = useTrack(videoPublication);
-  const isVideoSubscribed = Boolean(videoTrack);
-  // const [isVideoSubscribed, setIsVideoSubscribed] = useState(Boolean(videoTrack))
 
   const isVideoSwitchedOff = useIsTrackSwitchedOff(videoTrack as LocalVideoTrack | RemoteVideoTrack);
 
@@ -107,29 +103,21 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
 
   const classes = useStyles();
 
-  const isModerator = useIsModerator();
-  const isWebinar = useIsWebinar();
+  const { socket } = useAppState();
 
-  const updateSubscription = (event: React.MouseEvent<HTMLElement>) => {
+  const [isPublished, setIsPublished, toggleTracksEnabled] = useLocalTracksToggle();
+  console.log(isPublished)
+
+  const publishUpdate = (event: React.MouseEvent<HTMLElement>) => {
+
     event.preventDefault();
 
-    if (isModerator) {
-      fetch('/updateSubscription', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ identity: participant.identity, roomName: 'test' }),
-      })
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-      console.log('updateSubscription');
+    let data = {
+      identity: participant.identity,
+      state: isPublished
     }
+    socket.emit('change-publish', data);
+
   };
 
   return (
@@ -151,7 +139,8 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
         <div>
           <AudioLevelIndicator audioTrack={audioTrack} background="white" />
           <VideocamIcon videoEnabled={isVideoEnabled} />
-          <PresentToAll onClick={() => updateSubscription} />
+          <PresentationIcon isPresented={isVideoEnabled} onClick={publishUpdate}/>
+
           {isScreenShareEnabled && <ScreenShare />}
           {isVideoEnabled && isSelected && <PinIcon />}
         </div>

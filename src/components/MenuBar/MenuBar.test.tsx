@@ -31,7 +31,7 @@ window.location = {
 };
 const renderComponent = () => (
   <MemoryRouter>
-    <MenuBar />
+    <MenuBar onViewModeChange={()=> {}}/>
   </MemoryRouter>
 );
 
@@ -156,7 +156,7 @@ describe('the MenuBar component', () => {
     const { getByLabelText } = render(
       <MemoryRouter initialEntries={['/room/test']}>
         <Route path="/room/:URLRoomName">
-          <MenuBar />
+          <MenuBar onViewModeChange={()=> {}}/>
         </Route>
       </MemoryRouter>
     );

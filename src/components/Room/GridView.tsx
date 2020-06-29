@@ -62,7 +62,6 @@ export default function GridView() {
         {participants.slice(0, 5).map(participant => (
           <div key={participant.sid} className={classes.gridListItem}>
             <Participant
-              key={participant.sid}
               participant={participant}
               isSelected={selectedParticipant === participant}
               onClick={() => setSelectedParticipant(participant)}
