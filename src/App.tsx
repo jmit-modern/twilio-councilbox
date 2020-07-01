@@ -13,6 +13,8 @@ import { useAppState } from './state';
 
 import socketIOClient from "socket.io-client";
 
+// const socket = socketIOClient.connect("http://localhost:8080");
+
 const Container = styled('div')({
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
@@ -26,20 +28,19 @@ export default function App() {
   const [viewMode, setViewMode] = useState(false);
   const roomState = useRoomState();
 
-  const { setSocket } = useAppState();
+  // const { setSocket } = useAppState();
 
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    // Set Websocket as a global app state
-    const socket = socketIOClient("http://localhost:8080");
-    setSocket(socket);
+  //   // Set Websocket as a global app state
+  //   setSocket(socket);
 
-    console.log("app socket")
+  //   console.log("app socket")
 
-    return () => {
-      socket.disconnect();
-    }
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   }
+  // }, []);
 
   /**
    * Change View Mode of Video

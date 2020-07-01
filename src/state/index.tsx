@@ -17,6 +17,8 @@ export interface StateContextType {
   setActiveSinkId(sinkId: string): void;
   socket: SocketIOClient.Socket;
   setSocket(socket: SocketIOClient.Socket | null): void;
+  isPublished: boolean;
+  setIsPublished(isPublished: Boolean): void;
 }
 
 export const StateContext = createContext<StateContextType>(null!);
@@ -35,6 +37,7 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
   const [isFetching, setIsFetching] = useState(false);
   const [activeSinkId, setActiveSinkId] = useState('default'); 
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
+  const [isPublished, setIsPublished] = useState(false);
 
   let contextValue = {
     error,
@@ -43,7 +46,9 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
     activeSinkId,
     setActiveSinkId,
     socket,
-    setSocket
+    setSocket,
+    isPublished,
+    setIsPublished
   } as StateContextType;
 
   if (process.env.REACT_APP_SET_AUTH === 'firebase') {

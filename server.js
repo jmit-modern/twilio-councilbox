@@ -62,7 +62,7 @@ io.on('connection', socket => {
     // once we get a 'publish-user' event from one of our clients, we will send it to the rest of the clients
     // we make use of the socket.emit method again with the argument given to use from the callback function above
     console.log(`User ${data.state}: `, data.identity)
-    io.sockets.emit('change-publish', {identity: data.identity, state: data.state})
+    io.sockets.emit('publish-changed', {identity: data.identity, state: data.state})
   });
 
   // disconnect is fired when a client leaves the server

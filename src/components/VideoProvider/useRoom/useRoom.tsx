@@ -53,14 +53,16 @@ export default function useRoom(localTracks: LocalTrack[], onError: Callback, op
 
             if(isSubscriber){
 
-              newRoom.localParticipant.unpublishTrack(track);
-              console.log(track)
-              // track.stop()
-              // if(track.kind === 'audio')
-              // track.disable()
+              if(track.kind != 'data'){
+                const localTrackPublication = newRoom.localParticipant.unpublishTrack(track);
+                newRoom.localParticipant.emit('trackUnpublished', localTrackPublication);
+                track.stop();
+              }
+
             } else {
               newRoom.localParticipant.publishTrack(track, { priority: track.kind === 'video' ? 'low' : 'standard' });
             }
+
           });
 
           setIsConnecting(false);

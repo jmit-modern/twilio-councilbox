@@ -90,9 +90,9 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
 
   const audioPublication = publications.find(p => p.kind === 'audio');
   const videoPublication = publications.find(p => p.trackName.includes('camera'));
+  const isVideoEnabled = Boolean(videoPublication);
 
   const networkQualityLevel = useParticipantNetworkQualityLevel(participant);
-  const isVideoEnabled = Boolean(videoPublication);
   const isScreenShareEnabled = publications.find(p => p.trackName.includes('screen'));
 
   const videoTrack = useTrack(videoPublication);
@@ -103,10 +103,9 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
 
   const classes = useStyles();
 
-  const { socket } = useAppState();
+  const { socket, isPublished } = useAppState();
 
-  const [isPublished, setIsPublished, toggleTracksEnabled] = useLocalTracksToggle();
-  console.log(isPublished)
+  // const [isPublished, toggleTracksEnabled] = useLocalTracksToggle();
 
   const publishUpdate = (event: React.MouseEvent<HTMLElement>) => {
 
@@ -114,10 +113,9 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
 
     let data = {
       identity: participant.identity,
-      state: isPublished
+      state: !isPublished
     }
     socket.emit('change-publish', data);
-
   };
 
   return (
