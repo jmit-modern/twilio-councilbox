@@ -85,7 +85,7 @@ export default function Room({ viewMode }: ViewModeProps) {
 
   useEffect(()=>{
 
-    const socket = socketIOClient.connect("http://68.183.64.146:8080");
+    const socket = socketIOClient.connect("https://twilio.councilbox.com");
 
     setSocket(socket);
 
