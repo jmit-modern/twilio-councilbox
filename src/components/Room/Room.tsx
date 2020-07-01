@@ -42,8 +42,6 @@ export default function Room({ viewMode }: ViewModeProps) {
   // const isVideoEnabled = videoTrack ? videoTrack.isStopped : false;
 
   setIsPublished(isVideoEnabled)
-  // console.log(`isVideoEnabled000: ${isVideoEnabled}`)
-  // console.log(videoTrack)
 
   const toggleTracksEnabled = useCallback(() => {
 
@@ -56,31 +54,8 @@ export default function Room({ viewMode }: ViewModeProps) {
     // console.log(videoTrack)
     // const isVideoEnabled = videoTrack ? videoTrack.isStopped : false;
     // setIsPublished(!isVideoEnabled)
-
-    console.log(`isPublished: ${isPublished}`);
-    // setIsStopped(!isVideoEnabled); 
-    // console.log(`after setisStopped: ${isStopped}`);  
     
     if (isPublished) {
-      console.log("aaa")
-      
-        // getLocalVideoTrack().then((track: LocalVideoTrack) => {
-        //   if (localParticipant) {
-        //     track.stop();
-        //     const localVideoTrackPublication = localParticipant.unpublishTrack(track);
-        //     // TODO: remove when SDK implements this event. See: https://issues.corp.twilio.com/browse/JSDK-2592
-        //     localParticipant.emit('trackUnpublished', localVideoTrackPublication);
-        //   }
-        // });
-
-        // getLocalAudioTrack().then((track: LocalAudioTrack) => {
-        //   if(localParticipant) {
-        //     track.stop();
-        //     const localAudioTrackPublication = localParticipant.unpublishTrack(track);
-        //     // TODO: remove when SDK implements this event. See: https://issues.corp.twilio.com/browse/JSDK-2592
-        //     localParticipant.emit('trackUnpublished', localAudioTrackPublication);
-        //   }
-        // })
         const localTrackPublication = localParticipant.unpublishTrack(videoTrack);
         // TODO: remove when SDK implements this event. See: https://issues.corp.twilio.com/browse/JSDK-2592
         localParticipant.emit('trackUnpublished', localTrackPublication);
@@ -92,7 +67,7 @@ export default function Room({ viewMode }: ViewModeProps) {
         audioTrack.disable()
         audioTrack.stop();
     } else {
-      console.log("bbb")
+
       getLocalVideoTrack().then((track: LocalVideoTrack) => {
         if (localParticipant) {
           localParticipant.publishTrack(track, { priority: 'low' })
@@ -110,7 +85,7 @@ export default function Room({ viewMode }: ViewModeProps) {
 
   useEffect(()=>{
 
-    const socket = socketIOClient.connect("http://localhost:8080");
+    const socket = socketIOClient.connect("http://68.183.64.146:8080");
 
     setSocket(socket);
 
@@ -120,7 +95,6 @@ export default function Room({ viewMode }: ViewModeProps) {
           toggleTracksEnabled()
         }
     });
-    console.log("effect call")
 
     return () => {
       socket.disconnect();
