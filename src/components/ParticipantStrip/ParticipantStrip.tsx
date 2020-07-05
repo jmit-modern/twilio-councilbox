@@ -24,6 +24,10 @@ const ScrollContainer = styled('div')(({ theme }) => ({
 
 const ParticipantContainer = styled('div')(({ theme }) => ({
   height: `${(theme.sidebarWidth * 3) / 4}px`,
+  [theme.breakpoints.down('sm')]: {
+    width: `${window.innerWidth / 2}px`,
+    height: `auto`
+  },
 }));
 
 export default function ParticipantStrip() {

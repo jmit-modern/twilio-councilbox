@@ -21,5 +21,5 @@ export default createMuiTheme({
     },
   },
   sidebarWidth: 260,
-  sidebarMobileHeight: 90,
+  sidebarMobileHeight: 112,
 });

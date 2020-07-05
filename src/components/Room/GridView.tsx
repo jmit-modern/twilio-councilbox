@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme: Theme) =>
       gridTemplateColumns: '1fr 1fr 1fr',
       columnGap: '10px',
       rowGap: '10px',
+      [theme.breakpoints.down('xs')]: {
+        gridTemplateColumns: '1fr 1fr',
+      },
     },
     gridListItem: {},
     idStrip: {

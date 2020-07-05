@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainParticipantInfo from '../MainParticipantInfo/MainParticipantInfo';
 import ParticipantTracks from '../ParticipantTracks/ParticipantTracks';
 import useMainSpeaker from '../../hooks/useMainSpeaker/useMainSpeaker';
@@ -21,16 +21,24 @@ export default function MainParticipant() {
   } = useVideoContext();
   const videoContainedWidth = ((useHeight() - 64) * 4) / 3 + 'px';
 
-  const useStyles = makeStyles({
+  const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
     localParticipantTrack: {
       position: 'absolute',
+      border: '1px dashed',
       top: 0,
       right: `calc((100% - ${videoContainedWidth})/2)`,
       zIndex: 9,
       width: '220px',
-      border: '1px dashed',
+      [theme.breakpoints.down('sm')]: {
+        height: theme.sidebarMobileHeight,
+        right: 0,
+        top: '10px',
+        width: '160px',
+      },
     },
-  });
+  })
+);
 
   const classes = useStyles();
 
