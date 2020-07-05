@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from '@material-ui/core/styles';
+import { styled, Theme } from '@material-ui/core/styles';
 
 import Controls from './components/Controls/Controls';
 import LocalVideoPreview from './components/LocalVideoPreview/LocalVideoPreview';
@@ -11,8 +11,6 @@ import useHeight from './hooks/useHeight/useHeight';
 import useRoomState from './hooks/useRoomState/useRoomState';
 import { useAppState } from './state';
 
-import socketIOClient from "socket.io-client";
-
 // const socket = socketIOClient.connect("http://localhost:8080");
 
 const Container = styled('div')({
@@ -20,27 +18,16 @@ const Container = styled('div')({
   gridTemplateRows: 'auto 1fr',
 });
 
-const Main = styled('main')({
+const Main = styled('main')(({ theme }) => ({
   overflow: 'hidden',
-});
+  [theme.breakpoints.down('xs')]: {
+    padding: '5px'
+  }
+}));
 
 export default function App() {
   const [viewMode, setViewMode] = useState(false);
   const roomState = useRoomState();
-
-  // const { setSocket } = useAppState();
-
-  // useEffect(()=>{
-
-  //   // Set Websocket as a global app state
-  //   setSocket(socket);
-
-  //   console.log("app socket")
-
-  //   return () => {
-  //     socket.disconnect();
-  //   }
-  // }, []);
 
   /**
    * Change View Mode of Video

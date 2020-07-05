@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     toolbar: {
       [theme.breakpoints.down('xs')]: {
-        padding: 0,
+        paddingRight: '5px',
       },
     },
     rightButtonContainer: {
